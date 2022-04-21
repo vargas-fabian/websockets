@@ -6,7 +6,7 @@ socket.on(
     "nuevo_producto", (productos) => {
         // si hay uno previo lo elimino
     
-        var previoUl = document.body.getElementById('productos')
+        var previoUl = document.getElementById('productos')
         if (previoUl) {
             document.body.removeChild(previoUl);
         }
