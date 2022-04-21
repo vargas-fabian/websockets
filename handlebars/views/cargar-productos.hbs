@@ -1,0 +1,12 @@
+<form action="/api/productos" method="POST">
+    <input type="title" name="title" placeholder="Ingrese titulo" />
+    <input type="price"  name="price" placeholder="Ingrese precio" />
+    <input type="thumbnail" name="thumbnail" placeholder="Ingrese url imagen" />
+    <input type="submit" value="Submit" />
+</form>
+<p>Puedes visualizar los productos:</p>
+<a href='/productos'>Productos</a>
+<script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+{{#each scripts}}
+  <script src="{{script}}"></script>
+{{/each}}
