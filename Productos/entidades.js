@@ -1,3 +1,5 @@
+const knex = require('knex');
+
 class Producto{
     title;
     price;
@@ -8,77 +10,46 @@ class Producto{
         this.thumbnail =thumbnail;
     } 
 }
-class ProductoConId {
-    id;
-    producto;
-    constructor(id, producto){
-        this.id = id;
-        this.producto = producto;
-    }
-}
 
-class Contenedor{
-    idGlobal;
-    lista;
-    constructor(){
-        this.idGlobal = 1;
-        this.lista = []
+class Contenedor {
+    client;
+    tabla;
+    constructor(config, tabla){
+        this.tabla = tabla;
+        this.client = knex(config)
     }
-    add(producto){
-        const productoConId = new ProductoConId(this.idGlobal, producto);
-        this.lista.push(productoConId);
-        this.idGlobal = this.idGlobal + 1;
-    }
-    getAll(){
-        return this.lista;
-    }
-    getById(id){
 
-        for(var i=0; i< this.lista.length ; i++){
-            
-            const productoConId = this.lista[i];
-            console.log(productoConId)
-            if(id===productoConId.id){
-                return productoConId.producto
-            }
-        }
-        return undefined;
+    async add(producto){
+        const result = await this.client.table(this.tabla).insert(
+            producto
+        )
+        return result[0]
     }
-    postProduct(product){
-        this.add(product);
-        const ultimoElemento = this.lista.length -1
-        return this.lista[ultimoElemento];
+
+    async getAll(){
+        return await this.client.from(this.tabla).select()
     }
-    putProduct(id,producto){
-        for(var i=0; i< this.lista.length; i++){
-            const productoConId = this.lista[i];
-            if(id === productoConId.id){
-                productoConId.producto=producto;
-                return productoConId;
-            }
-        }
-        return undefined;
+    async getById(id){
+        const resultado = await this.client.from(this.tabla).where({'id': id}).first()
+        return resultado
     }
-    deleteProduct(id){
-        const nuevaLista = []
-        for(var i=0; i<this.lista.length;i++){
-            const productoConId = this.lista[i];
-            if(id !== productoConId.id){
-                nuevaLista.push(productoConId);
-            }
-        }
-        console.log("actual", this.lista);
-        console.log("nueva", nuevaLista);
-        if (this.lista.length === nuevaLista.length) {
-            return undefined;
-        }
-        this.lista = nuevaLista
-        return nuevaLista;
+
+    async postProduct(producto){
+        const id = await this.add(producto)
+        const resultado = await this.getById(id);
+        return resultado
+    }
+
+    async putProduct(id,producto){
+        await this.client.from(this.tabla).where({'id': id}).update(producto)
+    }
+
+    async deleteProduct(id){
+        await this.client.from(this.tabla).where({'id': id}).delete()
     }
 }
 
 module.exports = {
     Producto,
-    ProductoConId,
     Contenedor
 }

@@ -9,13 +9,13 @@ const GetRutas = (micontenedor, io) => {
 
     const router = express.Router();
 
-    router.get('/',(_ , res) => {
-        res.send(micontenedor.getAll())
+    router.get('/', async (_ , res) => {
+        res.send(await micontenedor.getAll())
     })
     
-    router.get('/:id',(req,res) => {
+    router.get('/:id',async (req,res) => {
         const id = parseInt(req.params.id);
-        const encontrado = micontenedor.getById(id);
+        const encontrado = await micontenedor.getById(id);
         if(encontrado){
           res.send(encontrado);  
         }
@@ -25,16 +25,16 @@ const GetRutas = (micontenedor, io) => {
         
     
     })
-    router.post('/',(req , res) => {
+    router.post('/',async (req , res) => {
         const productoRecibido = req.body;
-        res.send(micontenedor.postProduct(productoRecibido))
-        io.emit("nuevo_producto", micontenedor.getAll())
-        console.log(micontenedor.getAll())
+        res.send(await micontenedor.postProduct(productoRecibido))
+        io.emit("nuevo_producto", await micontenedor.getAll())
+        console.log(await micontenedor.getAll())
     })
-    router.put('/:id',(req, res) => {
+    router.put('/:id',async (req, res) => {
         const id = parseInt(req.params.id)
         const nuevoProducto = req.body;
-        const actualizado = micontenedor.putProduct(id , nuevoProducto);
+        const actualizado = await micontenedor.putProduct(id , nuevoProducto);
         if(actualizado){
           res.send(actualizado);  
         }
@@ -42,9 +42,9 @@ const GetRutas = (micontenedor, io) => {
             res.status(404).json(notFound)
         }
     })
-    router.delete('/:id',(req , res)=>{
+    router.delete('/:id',async (req , res)=>{
         const id = parseInt(req.params.id);
-        const eliminado =micontenedor.deleteProduct(id);
+        const eliminado = await micontenedor.deleteProduct(id);
         if(eliminado){
             res.send(eliminado)    
         } 

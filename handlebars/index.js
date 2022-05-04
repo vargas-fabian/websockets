@@ -4,6 +4,9 @@ const { entidades, getRutas } = require('../Productos')
 const { Contenedor, Producto } = entidades;
 const { Server: HttpServer } = require('http')
 const { Server: IOServer } = require("socket.io");
+
+const DB = require('./db')
+
 const path = require('path');
 
 const cargarProductosScripts = [{ script: './scripts/productos.js'}]
@@ -18,7 +21,9 @@ const hbs = create({
     layouDir: __dirname+ "/views/layouts",
     partialsDir: __dirname+ "/views/partials",
 })
-const micontenedor = new Contenedor();
+
+const micontenedor = new Contenedor(DB.config, DB.tabla);
+
 const rutas = getRutas(micontenedor, io);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -44,11 +49,12 @@ app.post('/productos', function(req, res) {
     res.redirect('/');
 });
 
-const server = httpServer.listen(8080, () =>{
+const server = httpServer.listen(8080, async () =>{
     // Datos de prueba
-    micontenedor.add(new Producto("auricular",5,"url1"));
-    micontenedor.add(new Producto("teclado",56,"url2"));
-    micontenedor.add(new Producto("mouse",64,"url3"));
+    await DB.init();
+    await micontenedor.add(new Producto("auricular",5,"url1"));
+    await micontenedor.add(new Producto("teclado",56,"url2"));
+    await micontenedor.add(new Producto("mouse",64,"url3"));
     console.log("servidor http en el puerto 8080");
 });
 
